@@ -3,10 +3,9 @@ import os
 
 import matplotlib.pyplot as plt
 
-MAIN_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.dirname(MAIN_DIR))
 
-from rvpipeline.search import *
+
+# from rvpipeline.search import *
 
 
 def test_search() -> None:

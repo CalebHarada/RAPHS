@@ -9,18 +9,17 @@ class StarData():
     Class that defines data for a given star.
 
     Args:
-        hd_identifier (int): HD identifier number for a star
+        hd_identifier (int): HD identifier number for a star.
         data_dir (str): Directory where all data is stored.
     """
     def __init__(self, 
         hd_identifier : int, 
-        data_dir : str,
         ) -> None:
         """__init__
         
         """
         self.hd_identifier = hd_identifier
-        self.data_dir = data_dir
+        self.data_dir = '../data/'
         self._binned = False
         
         # load the EMSL/SPORES catalog

@@ -3,10 +3,7 @@ import os
 
 import matplotlib.pyplot as plt
 
-MAIN_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.dirname(MAIN_DIR))
-
-from rvpipeline.data import StarData
+from raphs.stardata import StarData
 
 
 def test_data() -> None:
@@ -28,9 +25,7 @@ def test_data() -> None:
     
     # save to csv
     data.to_csv()
-    
-    # print data
-    print(data.rv_data)
+
     
     return None
 
