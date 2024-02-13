@@ -9,7 +9,6 @@ def test_data() -> None:
     """
     
     data = StarData(115617)
-    # data = StarData(166)
         
     # bin RVs
     data.bin_rvs()

@@ -4,9 +4,7 @@ from raphs.searchrvs import *
 
 
 def test_search() -> None:
-    """_summary_
-
-    _extended_summary_
+    """Test planet RV search
     """
     
     data = StarData(115617)
