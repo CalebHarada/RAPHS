@@ -10,16 +10,17 @@ class StarData():
 
     Args:
         hd_identifier (int): HD identifier number for a star.
-        data_dir (str): Directory where all data is stored.
+        data_dir (str, optional): Directory where all data is stored. Defaults to 'data/'.
     """
     def __init__(self, 
         hd_identifier : int, 
+        data_dir : str = 'data/',
         ) -> None:
         """__init__
         
         """
         self.hd_identifier = hd_identifier
-        self.data_dir = '../data/'
+        self.data_dir = data_dir
         self._binned = False
         
         # load the EMSL/SPORES catalog

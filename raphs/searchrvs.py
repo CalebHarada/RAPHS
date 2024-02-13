@@ -1,9 +1,12 @@
+import os
+
 from rvsearch import search
 
 from .stardata import StarData
 
 def search_rvs(
     data : StarData,
+    output_dir : str,
     **kwargs
     ) -> None:
     """_summary_
@@ -11,7 +14,8 @@ def search_rvs(
     _extended_summary_
 
     Args:
-        rv_data (StarData): _description_
+        data (StarData): _description_
+        output_dir (str): _description_
     """
     
     searcher = search.Search(
@@ -20,7 +24,11 @@ def search_rvs(
         **kwargs
     )
     
-    searcher.run_search(outdir=f'../OUT/{searcher.starname}')
+    out_subdir = f'{output_dir}/{searcher.starname}'
+    if not os.path.exists(out_subdir):
+        os.makedirs(out_subdir)
+    
+    searcher.run_search(outdir=out_subdir)
     
     return
 

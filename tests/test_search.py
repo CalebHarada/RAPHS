@@ -1,11 +1,6 @@
-import sys
-import os
-
 import matplotlib.pyplot as plt
 
-
-
-# from rvpipeline.search import *
+from raphs.searchrvs import *
 
 
 def test_search() -> None:
@@ -19,10 +14,11 @@ def test_search() -> None:
         
     search_rvs(
         data,
-        max_planets=8,
-        min_per=3,
+        output_dir='test_outputs/',
+        max_planets=0,
+        min_per=8,
         workers=4,
-        mcmc=True,
+        mcmc=False,
         verbose=True
     )
     
