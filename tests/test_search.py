@@ -7,7 +7,7 @@ def test_search() -> None:
     """Test planet RV search
     """
     
-    data = StarData(115617)
+    data = StarData('HD 75732 A')
     data.bin_rvs()
         
     search_rvs(

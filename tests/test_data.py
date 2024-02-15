@@ -8,7 +8,7 @@ def test_data() -> None:
     
     """
     
-    data = StarData(115617)
+    data = StarData('HD 75732 A')
         
     # bin RVs
     data.bin_rvs()

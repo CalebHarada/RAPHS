@@ -20,7 +20,7 @@ def search_rvs(
     
     searcher = search.Search(
         data.rv_data,
-        starname=data.hd_identifier,
+        starname=data.hd_name,
         **kwargs
     )
     
