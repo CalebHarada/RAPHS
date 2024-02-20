@@ -9,9 +9,7 @@ def test_data() -> None:
     """
     
     data = StarData('HD 75732 A')
-        
-    # bin RVs
-    data.bin_rvs()
+
         
     # save to csv
     data.to_csv()

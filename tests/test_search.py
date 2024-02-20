@@ -8,7 +8,6 @@ def test_search() -> None:
     """
     
     data = StarData('HD 75732 A')
-    data.bin_rvs()
         
     search_rvs(
         data,

@@ -1,33 +1,56 @@
 import os
 
 from rvsearch import search
+from radvel.utils import bintels
+
 
 from .stardata import StarData
 
 def search_rvs(
     data : StarData,
     output_dir : str,
-    **kwargs
+    bin_size : float = 0.5,
+    **search_kwargs
     ) -> None:
-    """_summary_
-
-    _extended_summary_
+    """Search RVs in a given data set
 
     Args:
-        data (StarData): _description_
-        output_dir (str): _description_
+        data (StarData): StarData object
+        output_dir (str): output directory
+        bin_size (float, optional): Bin size in days. Defaults to 0.5.
     """
     
+    # grab RV time series
+    rv_timeseries = data.rv_data
+            
+    # bin RVs
+    if bin_size is not None:
+        jd_bin, mnvel_bin, errvel_bin, tel_bin = bintels(
+            data.rv_data['jd'].values,
+            data.rv_data['mnvel'].values,
+            data.rv_data['errvel'].values,
+            data.rv_data['tel'].values,
+            binsize=bin_size
+        )
+        # update values in df
+        rv_timeseries['jd'] = jd_bin
+        rv_timeseries['mnvel'] = mnvel_bin
+        rv_timeseries['errvel'] = errvel_bin
+        rv_timeseries['tel'] = tel_bin
+    
+    # initiate search
     searcher = search.Search(
-        data.rv_data,
+        rv_timeseries,
         starname=data.hd_name,
-        **kwargs
+        **search_kwargs
     )
     
+    # set up output dir
     out_subdir = f'{output_dir}/{searcher.starname}'
     if not os.path.exists(out_subdir):
         os.makedirs(out_subdir)
     
+    # run search
     searcher.run_search(outdir=out_subdir)
     
     return
