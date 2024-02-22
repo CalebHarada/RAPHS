@@ -1,10 +1,11 @@
 import os
 
+import pandas as pd
 from rvsearch import search
 from radvel.utils import bintels
 
-
 from .stardata import StarData
+
 
 def search_rvs(
     data : StarData,
@@ -21,10 +22,11 @@ def search_rvs(
     """
     
     # grab RV time series
-    rv_timeseries = data.rv_data
+    if bin_size is None:
+        rv_timeseries = data.rv_data
             
     # bin RVs
-    if bin_size is not None:
+    else:
         jd_bin, mnvel_bin, errvel_bin, tel_bin = bintels(
             data.rv_data['jd'].values,
             data.rv_data['mnvel'].values,
@@ -32,11 +34,13 @@ def search_rvs(
             data.rv_data['tel'].values,
             binsize=bin_size
         )
-        # update values in df
+        # update values in new df
+        rv_timeseries = pd.DataFrame()
         rv_timeseries['jd'] = jd_bin
         rv_timeseries['mnvel'] = mnvel_bin
         rv_timeseries['errvel'] = errvel_bin
         rv_timeseries['tel'] = tel_bin
+                
     
     # initiate search
     searcher = search.Search(
