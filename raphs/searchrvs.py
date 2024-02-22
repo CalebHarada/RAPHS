@@ -1,5 +1,6 @@
 import os
 
+import numpy as np
 import pandas as pd
 from rvsearch import search
 from radvel.utils import bintels
@@ -42,10 +43,18 @@ def search_rvs(
         rv_timeseries['tel'] = tel_bin
                 
     
+    # get stellar mass and uncert
+    # NOTE: here using ARIADNE-derived masses
+    mstar = (
+        data.catalog_entry['sed_grav_mass'],
+        np.mean([data.catalog_entry['sed_grav_masserr1'], data.catalog_entry['sed_grav_masserr2']])
+        )
+    
     # initiate search
     searcher = search.Search(
         rv_timeseries,
         starname=data.hd_name,
+        mstar=mstar,
         **search_kwargs
     )
     
