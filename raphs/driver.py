@@ -1,4 +1,5 @@
 from raphs.stardata import StarData
+from raphs.periodogram import LSPeriodogram
 from raphs.searchrvs import search_rvs
 from raphs.injrec import run_injrec
 
@@ -69,6 +70,9 @@ class Driver():
                     beta_e=True
                 )
                 
+            # make LS periodograms
+            lsp = LSPeriodogram(data, rv_search_dir)
+            lsp.plot_lsps()
 
         
         
