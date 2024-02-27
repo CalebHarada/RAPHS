@@ -46,6 +46,7 @@ class Driver():
             # TODO: check for number of data points
             
             # run search
+            print(f'Searching RVs for {data.hd_name}...')
             rv_search_obj, rv_search_dir = search_rvs(
                 data=data,
                 output_dir=out_dir,
@@ -54,12 +55,13 @@ class Driver():
                 max_planets=8,
                 min_per=3,
                 workers=nproc, 
-                mcmc=False, #True, 
+                mcmc=True, 
                 verbose=True
             )
             
             # run injection and recovery
             if inj_rec:
+                print(f'Running injections for {data.hd_name}...')
                 _ = run_injrec(
                     search_path=rv_search_dir,
                     searches=rv_search_obj,
@@ -78,8 +80,11 @@ class Driver():
             
             
             # make LS periodograms
+            print(f'Computing LS periodograms for {data.hd_name}...')
             lsp = LSPeriodogram(data, rv_search_dir)
             lsp.plot_lsps()
+            
+            print(f'{data.hd_name} DONE.')
 
         
         

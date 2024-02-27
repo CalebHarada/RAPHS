@@ -67,11 +67,11 @@ def search_rvs(
         os.makedirs(out_subdir)
     
     # run search
-    #searcher.run_search(outdir=out_subdir)
+    searcher.run_search(outdir=out_subdir)
     
     # create summary plot 
-    #pmp = PeriodModelPlot(searcher, saveplot=f'{out_subdir}/{searcher.starname}_summary.pdf')
-    #pmp.plot_summary()
+    pmp = PeriodModelPlot(searcher, saveplot=f'{out_subdir}/{searcher.starname}_summary.pdf')
+    pmp.plot_summary()
     
     return searcher, out_subdir
 

@@ -146,7 +146,6 @@ class LSPeriodogram():
         
         # compute LS periodograms
         lsps = self.compute_lsps(**compute_kwargs)
-        print(lsps)
         
         # set up figure
         fig, axes = plt.subplots(
