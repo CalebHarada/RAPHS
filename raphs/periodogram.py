@@ -109,7 +109,7 @@ class LSPeriodogram():
             tuple: (power_thresh, fap_min)
         """
         # sort power
-        power_sorted = np.sort(power[~np.isnan(power)])
+        power_sorted = np.sort(power)
         
         # crop out the 50th to 95th percentile data and save the median value
         power_crop = power_sorted[int(0.5 * len(power_sorted)) : int(0.95 * len(power_sorted))]
@@ -146,6 +146,7 @@ class LSPeriodogram():
         
         # compute LS periodograms
         lsps = self.compute_lsps(**compute_kwargs)
+        print(lsps)
         
         # set up figure
         fig, axes = plt.subplots(
