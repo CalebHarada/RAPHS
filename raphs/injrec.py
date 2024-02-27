@@ -27,14 +27,16 @@ def run_injrec(
     
     # run injections
     recoveries = inj.run_injections(num_cpus=workers)
-    inj.save()
-    
-    # TODO: (??) Save recoveries? Not sure if that happens automatically
-    
+    recoveries.to_csv(f'{search_path}/recoveries.csv', index=False)
+        
     # plot completeness
     comp = Completeness(recoveries, mstar=mstar)
     cp = CompletenessPlots(comp, searches=[searches])
-    fig = cp.completeness_plot(xlabel='$a$ [AU]', ylabel=r'M$\sin{i}$ [M$_{\oplus}$]')
+    fig = cp.completeness_plot(
+        xlabel='$a$ [AU]', 
+        ylabel=r'M$\sin{i}$ [M$_{\oplus}$]',
+        title=searches.starname
+    )
     fig.savefig(f'{search_path}/{searches.starname}_recoveries.pdf')
     
     return recoveries

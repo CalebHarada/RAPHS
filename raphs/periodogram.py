@@ -27,30 +27,29 @@ class LSPeriodogram():
         self.output_dir = output_dir
         self.bin_size = bin_size
         self.tels = np.unique(data.rv_data['tel'].values)
+        self.lsp_dict = None
         
         pass
     
     
     def compute_lsps(self,
-        min_per : float = 1,
-        max_per : float = 10000,
-        n_points : int = 500000,
+        min_per : float = 3.1,
+        delta_f : float = 1e-6,
         ) -> dict:
         """Compute LS periodograms for the data.
 
         Args:
             min_per (float, optional): minimum period. Defaults to 1.
-            max_per (float, optional): maximum period. Defaults to 10000.
-            n_points (int, optional): number of frequency grid points. Defaults to 500000.
+            delta_f (float, optional): frequency grid spacing. Defaults to 1e-6.
 
         Returns:
             dict: lsp_dict
-        """
-        
+        """       
         rvs = self.data.rv_data
         svals = self.data.S_index_data
         
-        f = np.linspace(1/max_per, 1/min_per, n_points)
+        max_per = 1.5 * np.ptp(rvs['jd'])
+        f = np.arange(1/max_per, 1/min_per, delta_f)
         
         # combined data sets
         lsp_dict = dict(all=dict(frequency=f))
@@ -60,6 +59,8 @@ class LSPeriodogram():
         # individual instruments
         for tel in self.tels:
             # frequencies
+            max_per = 1.5 * np.ptp(rvs.loc[rvs['tel'] == tel, 'jd'])
+            f = np.arange(1/max_per, 1/min_per, delta_f)
             lsp_dict[tel] = dict(frequency=f)
             
             # RVs
@@ -82,6 +83,8 @@ class LSPeriodogram():
                 np.ones(len(rvs.loc[rvs['tel'] == tel, 'jd'])),
                 center_data=False
             ).power(f)
+        
+        self.lsp_dict = lsp_dict
         
         return lsp_dict
         
@@ -189,7 +192,8 @@ class LSPeriodogram():
             ax.axvline(365.25, ls='-', c='r', lw=5, alpha=0.25, zorder=0)  # alias at one year
             ax.axvline(29.5, ls='-', c='k', lw=5, alpha=0.25, zorder=0)  # alias at one lunar cycle
         axes[-1].set_xscale('log')
-        axes[-1].set_xticks([10, 100, 1000])
+        axes[-1].set_xticks([10, 100, 1000, 10000])
+        axes[-1].set_xticklabels([10, 100, 1000, 10000])
         axes[-1].set_xlim(1/lsps['all']['frequency'].max(), 1/lsps['all']['frequency'].min())
         axes[-1].set_xlabel('Period (days)', size=14)
         
