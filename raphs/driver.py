@@ -57,9 +57,9 @@ class Driver():
             
             # run injection and recovery
             if inj_rec:
-                recoveries = run_injrec(
-                    search_path=f'{rv_search_dir}/search.pkl',
-                    searches=[rv_search_obj],
+                _ = run_injrec(
+                    search_path=rv_search_dir,
+                    searches=rv_search_obj,
                     mstar=data.catalog_entry['sed_grav_mass'],
                     workers=nproc,
                     plim=(2, 10000),
