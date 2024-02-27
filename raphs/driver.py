@@ -52,7 +52,7 @@ class Driver():
                 max_planets=8,
                 min_per=3,
                 workers=nproc, 
-                mcmc=True, 
+                mcmc=False, #True, 
                 verbose=True
             )
             
