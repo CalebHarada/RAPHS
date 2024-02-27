@@ -2,7 +2,8 @@ import os
 
 import numpy as np
 import pandas as pd
-from rvsearch import search
+from rvsearch.search import Search
+from rvsearch.plots import PeriodModelPlot
 from radvel.utils import bintels
 
 from .stardata import StarData
@@ -13,15 +14,17 @@ def search_rvs(
     output_dir : str,
     bin_size : float = 0.5,
     **search_kwargs
-    ) -> None:
+    ) -> str:
     """Search RVs in a given data set
 
     Args:
         data (StarData): StarData object
         output_dir (str): output directory
         bin_size (float, optional): Bin size in days. Defaults to 0.5.
-    """
     
+    Returns:
+        search.Search, str: searcher, out_subdir
+    """
     # grab RV time series
     if bin_size is None:
         rv_timeseries = data.rv_data
@@ -51,7 +54,7 @@ def search_rvs(
         )
     
     # initiate search
-    searcher = search.Search(
+    searcher = Search(
         rv_timeseries,
         starname=data.hd_name,
         mstar=mstar,
@@ -59,13 +62,17 @@ def search_rvs(
     )
     
     # set up output dir
-    out_subdir = f'{output_dir}/{searcher.starname}'
+    out_subdir = f'{output_dir}/{searcher.starname}/RVs'
     if not os.path.exists(out_subdir):
         os.makedirs(out_subdir)
     
     # run search
     searcher.run_search(outdir=out_subdir)
     
-    return
+    # create summary plot 
+    pmp = PeriodModelPlot(searcher, saveplot=f'{out_subdir}/{searcher.starname}_summary.pdf')
+    pmp.plot_summary()
+    
+    return searcher, out_subdir
 
 

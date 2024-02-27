@@ -1,5 +1,7 @@
 from raphs.stardata import StarData
 from raphs.searchrvs import search_rvs
+from raphs.injrec import run_injrec
+
 
 
 ########################################################
@@ -27,7 +29,9 @@ class Driver():
     
     def do_everything(self,
             data_dir : str = '../data/',
-            out_dir : str = 'OUT'
+            out_dir : str = 'OUT',
+            inj_rec : bool = True,
+            nproc : int = 64,
         ) -> None:
         """Run everything
 
@@ -39,17 +43,32 @@ class Driver():
             data = StarData(star, data_dir=data_dir)
             
             # run search
-            search_rvs(
+            rv_search_obj, rv_search_dir = search_rvs(
                 data=data,
                 output_dir=out_dir,
                 fap=0.001,
                 crit='bic',
                 max_planets=8,
                 min_per=3,
-                workers=64, 
+                workers=nproc, 
                 mcmc=True, 
                 verbose=True
             )
+            
+            # run injection and recovery
+            if inj_rec:
+                recoveries = run_injrec(
+                    search_path=f'{rv_search_dir}/search.pkl',
+                    searches=[rv_search_obj],
+                    mstar=data.catalog_entry['sed_grav_mass'],
+                    workers=nproc,
+                    plim=(2, 10000),
+                    klim=(0.1, 1000),
+                    elim=(0.0, 0.9),
+                    num_sim=5000,
+                    beta_e=True
+                )
+                
 
         
         

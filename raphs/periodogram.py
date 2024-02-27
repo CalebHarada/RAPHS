@@ -155,7 +155,7 @@ class LSPeriodogram():
         # all RVs
         ax = axes[0]
         ax.plot(1/lsps['all']['frequency'], lsps['all']['rv_power'], c='navy', lw=1, label='All RVs')
-        ax.axhline(self.compute_fap_thresh(lsps['all']['rv_power'], fap=fap)[0], ls='--', lw=1, c='firebrick')
+        ax.axhline(self.compute_fap_thresh(lsps['all']['rv_power'], fap=fap)[0], ls='--', lw=1, c='firebrick', label=f'FAP = {fap}')
         ax.axhspan(-1, self.compute_fap_thresh(lsps['all']['rv_power'], fap=fap)[0], alpha=0.1)
         ax.legend(loc=2)
         
