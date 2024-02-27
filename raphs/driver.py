@@ -43,6 +43,8 @@ class Driver():
             # load data
             data = StarData(star, data_dir=data_dir)
             
+            # TODO: check for number of data points
+            
             # run search
             rv_search_obj, rv_search_dir = search_rvs(
                 data=data,
@@ -63,13 +65,18 @@ class Driver():
                     searches=rv_search_obj,
                     mstar=data.catalog_entry['sed_grav_mass'],
                     workers=nproc,
-                    plim=(2, 10000),
-                    klim=(0.1, 1000),
+                    plim=(3.1, 1e5),
+                    klim=(0.1, 1000.0),
                     elim=(0.0, 0.9),
                     num_sim=5000,
+                    full_grid=False,
                     beta_e=True
                 )
                 
+                
+            # TODO: add s-index analysis
+            
+            
             # make LS periodograms
             lsp = LSPeriodogram(data, rv_search_dir)
             lsp.plot_lsps()

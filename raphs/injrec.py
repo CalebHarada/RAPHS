@@ -27,6 +27,9 @@ def run_injrec(
     
     # run injections
     recoveries = inj.run_injections(num_cpus=workers)
+    inj.save()
+    
+    # TODO: (??) Save recoveries? Not sure if that happens automatically
     
     # plot completeness
     comp = Completeness(recoveries, mstar=mstar)
