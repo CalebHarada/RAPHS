@@ -81,8 +81,8 @@ class LSPeriodogram():
             lsp_dict[tel]['windowfn_power'] = LombScargle(
                 rvs.loc[rvs['tel'] == tel, 'jd'],
                 np.ones(len(rvs.loc[rvs['tel'] == tel, 'jd'])),
-                center_data=False
-            ).autopower()[1]
+                fit_mean=False, center_data=False
+            ).power(f)
         
         self.lsp_dict = lsp_dict
         
