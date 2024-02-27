@@ -48,7 +48,7 @@ class LSPeriodogram():
         rvs = self.data.rv_data
         svals = self.data.S_index_data
         
-        max_per = 1.5 * np.ptp(rvs['jd'])
+        max_per = 1.2 * np.ptp(rvs['jd'])
         f = np.arange(1/max_per, 1/min_per, delta_f)
         
         # combined data sets
@@ -59,7 +59,7 @@ class LSPeriodogram():
         # individual instruments
         for tel in self.tels:
             # frequencies
-            max_per = 1.5 * np.ptp(rvs.loc[rvs['tel'] == tel, 'jd'])
+            max_per = 1.2 * np.ptp(rvs.loc[rvs['tel'] == tel, 'jd'])
             f = np.arange(1/max_per, 1/min_per, delta_f)
             lsp_dict[tel] = dict(frequency=f)
             
