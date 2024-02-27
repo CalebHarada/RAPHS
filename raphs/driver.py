@@ -7,7 +7,7 @@ from raphs.injrec import run_injrec
 
 ########################################################
 # LIST OF TARGET STARS (eventually, should do all stars)
-sample_stars = ['HD 190360']
+sample_stars = ['HD 190360', 'HD 115617']
 ########################################################
    
 
