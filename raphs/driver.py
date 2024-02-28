@@ -32,6 +32,7 @@ class Driver():
             data_dir : str = '../data/',
             out_dir : str = 'OUT',
             inj_rec : bool = True,
+            mcmc : bool = True,
             nproc : int = 64,
         ) -> None:
         """Run everything
@@ -55,7 +56,7 @@ class Driver():
                 max_planets=8,
                 min_per=3,
                 workers=nproc, 
-                mcmc=True, 
+                mcmc=mcmc, 
                 verbose=True
             )
             
