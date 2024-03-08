@@ -96,13 +96,13 @@ class LSPeriodogram():
             list: periods
         """
         
-        post = posterior.load(self.output_dir + '/post_final.pkl')
+        post = posterior.load(self.output_dir + '/RV_search/post_final.pkl')
         param_list = post.list_params()
         
         periods = []
         for param in param_list:
             if param.startswith('per'):
-                periods.append(post.medparams[param])
+                periods.append(post.params[param].value)
                 
         return periods
         

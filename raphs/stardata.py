@@ -142,7 +142,7 @@ class StarData():
             pass
         
         # No HARPS data found
-        raise FileNotFoundError(f'No HARPS data found for {self.hd_name}.')
+        raise FileNotFoundError(f'No HARPS data found')
     
     
     def _load_hires_ebps_data(self) -> pd.DataFrame:
@@ -188,7 +188,7 @@ class StarData():
             pass
 
         # No HIRES data found
-        raise FileNotFoundError(f'No HIRES data found for {self.hd_name}.')
+        raise FileNotFoundError(f'No HIRES data found')
     
     
     def _combine_rvs(self) -> pd.DataFrame:
@@ -251,7 +251,7 @@ class StarData():
             return rv_data
         
         else:
-            raise ValueError(f'WARNING: No RV data for {self.hd_name}!')
+            raise ValueError(f'WARNING: No RV data!')
         
         
         
@@ -332,27 +332,21 @@ class StarData():
             return st_activity_data
         
         else:
-            raise ValueError(f'WARNING: No S-index data for {self.hd_name}!')
+            raise ValueError(f'WARNING: No S-index data!')
         
 
     
     def to_csv(self,
-        save_fn : str = 'default'
+        save_fn : str
         ) -> None:
         """to_csv
 
         Save RV data to a CSV file
 
         Args:
-            save_fn (str, optional): Save filename. Defaults to 'default'.
+            save_fn (str): Save filename.
         """
-        # create new directory if set to default
-        if save_fn == 'default':
-            save_dir = self.data_dir + 'combined_RVs/'
-            if not os.path.exists(save_dir):
-                os.makedirs(save_dir)
-            save_fn = save_dir + f'{self.hd_name}.csv'
-        
+
         # save DF as CSV
         self.rv_data.to_csv(save_fn)
         

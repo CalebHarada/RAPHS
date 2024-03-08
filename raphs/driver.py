@@ -1,6 +1,9 @@
+import os, sys
+from datetime import datetime
+
 from raphs.stardata import StarData
 from raphs.periodogram import LSPeriodogram
-from raphs.searchrvs import search_rvs
+from raphs.search import search_rvs, search_sinds
 from raphs.injrec import run_injrec
 
 
@@ -33,59 +36,95 @@ class Driver():
             out_dir : str = 'OUT',
             inj_rec : bool = True,
             mcmc : bool = True,
+            sind : bool = True,
             nproc : int = 64,
         ) -> None:
         """Run everything
 
         """
+        stdout_ = sys.stdout
         
         for star in self.target_list:
+            
+            # set up output dir
+            out_subdir = f'{out_dir}/{star}'
+            if not os.path.exists(out_subdir):
+                os.makedirs(out_subdir)
+                
+            with open(out_subdir + '/log.txt', 'w') as f:
+                # start log file
+                sys.stdout = f
+                print('LOG ' + datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+                print(star)
+                print('\n---------------------------\n')
 
-            # load data
-            data = StarData(star, data_dir=data_dir)
-            
-            # TODO: check for number of data points
-            
-            # run search
-            print(f'Searching RVs for {data.hd_name}...')
-            rv_search_obj, rv_search_dir = search_rvs(
-                data=data,
-                output_dir=out_dir,
-                fap=0.001,
-                crit='bic',
-                max_planets=8,
-                min_per=3,
-                workers=nproc, 
-                mcmc=mcmc, 
-                verbose=True
-            )
-            
-            # run injection and recovery
-            if inj_rec:
-                print(f'Running injections for {data.hd_name}...')
-                _ = run_injrec(
-                    search_path=rv_search_dir,
-                    searches=rv_search_obj,
-                    mstar=data.catalog_entry['sed_grav_mass'],
-                    workers=nproc,
-                    plim=(3.1, 1e5),
-                    klim=(0.1, 1000.0),
-                    elim=(0.0, 0.9),
-                    num_sim=5000,
-                    full_grid=False,
-                    beta_e=True
+                # load data and save CSVs
+                print('Loading data...')
+                data = StarData(star, data_dir=data_dir)
+                data.rv_data.to_csv(out_subdir + '/rvs.csv')
+                data.S_index_data.to_csv(out_subdir + '/sinds.csv')
+                
+                # check for number of data points
+                if len(data.rv_data) < 25:
+                    print('\nNUMBER OF RVS < 25. SKIPPING TO NEXT TARGET.')
+                    sys.stdout = stdout_
+                    continue
+                
+                # run search
+                print(f'\nSearching RVs...')
+                rv_search_obj = search_rvs(
+                    data=data,
+                    output_dir=out_dir,
+                    fap=0.001,
+                    crit='bic',
+                    max_planets=8,
+                    min_per=3,
+                    workers=nproc, 
+                    mcmc=mcmc, 
+                    verbose=True
                 )
                 
+                # run injection and recovery
+                if inj_rec:
+                    print(f'\nRunning injections...')
+                    _ = run_injrec(
+                        search_path=out_dir + '/RV_search',
+                        searches=rv_search_obj,
+                        mstar=data.catalog_entry['sed_grav_mass'],
+                        workers=nproc,
+                        plim=(3.1, 1e6),
+                        klim=(0.1, 1000.0),
+                        elim=(0.0, 0.9),
+                        num_sim=5000,
+                        full_grid=False,
+                        beta_e=True
+                    )
+                    
+                    
+                # s-index analysis
+                if sind:
+                    print(f'\nSearching S values...')
+                    _ = search_sinds(
+                        data=data,
+                        output_dir=out_dir,
+                        fap=0.001,
+                        crit='bic',
+                        max_planets=8,
+                        min_per=3,
+                        workers=nproc, 
+                        mcmc=mcmc, 
+                        verbose=True
+                    )
                 
-            # TODO: add s-index analysis
-            
-            
-            # make LS periodograms
-            print(f'Computing LS periodograms for {data.hd_name}...')
-            lsp = LSPeriodogram(data, rv_search_dir)
-            lsp.plot_lsps()
-            
-            print(f'{data.hd_name} DONE.')
+                
+                # make LS periodograms
+                print(f'\nComputing LS periodograms...')
+                lsp = LSPeriodogram(data, out_dir)
+                lsp.plot_lsps()
+                
+                print(f'\nDONE.')
+                
+                sys.stdout = stdout_
 
         
         
