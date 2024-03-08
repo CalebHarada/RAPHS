@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from radvel.utils import bintels
+from radvel import posterior
 from astropy.timeseries import LombScargle
 
 from .stardata import StarData
@@ -89,6 +89,23 @@ class LSPeriodogram():
         return lsp_dict
         
     
+    def get_periods_from_posterior(self):
+        """Load periods form radvel posterior object
+
+        Returns:
+            list: periods
+        """
+        
+        post = posterior.load(self.output_dir + '/post_final.pkl')
+        param_list = post.list_params()
+        
+        periods = []
+        for param in param_list:
+            if param.startswith('per'):
+                periods.append(post.medparams[param])
+                
+        return periods
+        
     
     def compute_fap_thresh(self,
             power : np.ndarray,
@@ -183,6 +200,13 @@ class LSPeriodogram():
             ax.axhline(self.compute_fap_thresh(lsps[tel]['windowfn_power'], fap=fap)[0], ls='--', lw=1, c='firebrick')
             ax.axhspan(-1, self.compute_fap_thresh(lsps[tel]['windowfn_power'], fap=fap)[0], alpha=0.1)
             ax.legend(loc=2)
+        
+        # add detected periods
+        periods_post = self.get_periods_from_posterior()
+        if len(periods_post) > 0:
+            for per in periods_post:
+                for ax in axes:
+                    ax.axvline(per, ls='--', c='k', lw=1, alpha=0.5, zorder=0)
             
         # global adjustments
         for ax in axes:
@@ -202,6 +226,3 @@ class LSPeriodogram():
         return fig
     
     
-    
-# TODO: Plot RVSearch-detected planet signals as dashed vertical lines
-#       (need to read in results from RVSearch...)
