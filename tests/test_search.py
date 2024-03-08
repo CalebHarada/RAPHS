@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-from raphs.searchrvs import *
+from raphs.search import *
 
 
 def test_search() -> None:

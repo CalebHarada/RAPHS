@@ -74,7 +74,7 @@ class Driver():
                 print(f'\nSearching RVs...')
                 rv_search_obj = search_rvs(
                     data=data,
-                    output_dir=out_dir,
+                    output_dir=out_subdir,
                     fap=0.001,
                     crit='bic',
                     max_planets=8,
@@ -88,7 +88,7 @@ class Driver():
                 if inj_rec:
                     print(f'\nRunning injections...')
                     _ = run_injrec(
-                        search_path=out_dir + '/RV_search',
+                        search_path=out_subdir + '/RV_search',
                         searches=rv_search_obj,
                         mstar=data.catalog_entry['sed_grav_mass'],
                         workers=nproc,
@@ -106,7 +106,7 @@ class Driver():
                     print(f'\nSearching S values...')
                     _ = search_sinds(
                         data=data,
-                        output_dir=out_dir,
+                        output_dir=out_subdir,
                         fap=0.001,
                         crit='bic',
                         max_planets=8,
@@ -119,7 +119,7 @@ class Driver():
                 
                 # make LS periodograms
                 print(f'\nComputing LS periodograms...')
-                lsp = LSPeriodogram(data, out_dir)
+                lsp = LSPeriodogram(data, out_subdir)
                 lsp.plot_lsps()
                 
                 print(f'\nDONE.')

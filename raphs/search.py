@@ -62,7 +62,7 @@ def search_rvs(
     )
     
     # set up output dir
-    out_subdir = f'{output_dir}/{searcher.starname}/RV_search'
+    out_subdir = f'{output_dir}/RV_search'
     if not os.path.exists(out_subdir):
         os.makedirs(out_subdir)
     
@@ -137,7 +137,7 @@ def search_sinds(
     )
     
     # set up output dir
-    out_subdir = f'{output_dir}/{searcher.starname}/Sind_search'
+    out_subdir = f'{output_dir}/Sind_search'
     if not os.path.exists(out_subdir):
         os.makedirs(out_subdir)
     
