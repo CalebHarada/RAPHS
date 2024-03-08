@@ -1,5 +1,7 @@
 import os, sys
+import traceback
 from datetime import datetime
+
 
 from raphs.stardata import StarData
 from raphs.periodogram import LSPeriodogram
@@ -54,57 +56,27 @@ class Driver():
             with open(out_subdir + '/log.txt', 'w') as f:
                 # start log file
                 sys.stdout = f
+                print('RAPHS: (R)adial velocity (A)nalysis of (P)otential (H)WO (S)tars')
                 print('LOG ' + datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
                 print(star)
                 print('\n---------------------------\n')
-
-                # load data and save CSVs
-                print('Loading data...')
-                data = StarData(star, data_dir=data_dir)
-                data.rv_data.to_csv(out_subdir + '/rvs.csv')
-                data.S_index_data.to_csv(out_subdir + '/sinds.csv')
                 
-                # check for number of data points
-                if len(data.rv_data) < 25:
-                    print('\nNUMBER OF RVS < 25. SKIPPING TO NEXT TARGET.')
-                    sys.stdout = stdout_
-                    continue
-                
-                # run search
-                print(f'\nSearching RVs...')
-                rv_search_obj = search_rvs(
-                    data=data,
-                    output_dir=out_subdir,
-                    fap=0.001,
-                    crit='bic',
-                    max_planets=8,
-                    min_per=3,
-                    workers=nproc, 
-                    mcmc=mcmc, 
-                    verbose=True
-                )
-                
-                # run injection and recovery
-                if inj_rec:
-                    print(f'\nRunning injections...')
-                    _ = run_injrec(
-                        search_path=out_subdir + '/RV_search',
-                        searches=rv_search_obj,
-                        mstar=data.catalog_entry['sed_grav_mass'],
-                        workers=nproc,
-                        plim=(3.1, 1e6),
-                        klim=(0.1, 1000.0),
-                        elim=(0.0, 0.9),
-                        num_sim=5000,
-                        full_grid=False,
-                        beta_e=True
-                    )
+                try:
+                    # load data and save CSVs
+                    print('Loading data...')
+                    data = StarData(star, data_dir=data_dir)
+                    data.rv_data.to_csv(out_subdir + '/rvs.csv')
+                    data.S_index_data.to_csv(out_subdir + '/sinds.csv')
                     
+                    # check for number of data points
+                    if len(data.rv_data) < 25:
+                        print('\nNUMBER OF RVS < 25. SKIPPING TO NEXT TARGET.')
+                        sys.stdout = stdout_
+                        continue
                     
-                # s-index analysis
-                if sind:
-                    print(f'\nSearching S values...')
-                    _ = search_sinds(
+                    # run search
+                    print(f'\nSearching RVs...')
+                    rv_search_obj = search_rvs(
                         data=data,
                         output_dir=out_subdir,
                         fap=0.001,
@@ -115,12 +87,47 @@ class Driver():
                         mcmc=mcmc, 
                         verbose=True
                     )
-                
-                
-                # make LS periodograms
-                print(f'\nComputing LS periodograms...')
-                lsp = LSPeriodogram(data, out_subdir)
-                lsp.plot_lsps()
+                    
+                    # run injection and recovery
+                    if inj_rec:
+                        print(f'\nRunning injections...')
+                        _ = run_injrec(
+                            search_path=out_subdir + '/RV_search',
+                            searches=rv_search_obj,
+                            mstar=data.catalog_entry['sed_grav_mass'],
+                            workers=nproc,
+                            plim=(3.1, 1e6),
+                            klim=(0.1, 1000.0),
+                            elim=(0.0, 0.9),
+                            num_sim=5000,
+                            full_grid=False,
+                            beta_e=True
+                        )
+                        
+                        
+                    # s-index analysis
+                    if sind:
+                        print(f'\nSearching S values...')
+                        _ = search_sinds(
+                            data=data,
+                            output_dir=out_subdir,
+                            fap=0.001,
+                            crit='bic',
+                            max_planets=8,
+                            min_per=3,
+                            workers=nproc, 
+                            mcmc=mcmc, 
+                            verbose=True
+                        )
+                    
+                    # make LS periodograms
+                    print(f'\nComputing LS periodograms...')
+                    lsp = LSPeriodogram(data, out_subdir)
+                    lsp.plot_lsps()
+                    
+                except Exception:
+                    print('Exception occurred!')
+                    print(traceback.format_exc())
                 
                 print(f'\nDONE.')
                 
