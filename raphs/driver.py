@@ -67,13 +67,17 @@ class Driver():
                     data = StarData(star, data_dir=data_dir)
                     data.rv_data.to_csv(out_subdir + '/rvs.csv')
                     data.S_index_data.to_csv(out_subdir + '/sinds.csv')
+                except Exception:
+                    print('Exception occurred!')
+                    print(traceback.format_exc())
                     
-                    # check for number of data points
-                    if len(data.rv_data) < 25:
-                        print('\nNUMBER OF RVS < 25. SKIPPING TO NEXT TARGET.')
-                        sys.stdout = stdout_
-                        continue
+                # check for number of data points
+                if len(data.rv_data) < 25:
+                    print('\nNUMBER OF RVS < 25. SKIPPING TO NEXT TARGET.')
+                    sys.stdout = stdout_
+                    continue
                     
+                try:
                     # run search
                     print(f'\nSearching RVs...')
                     rv_search_obj = search_rvs(
@@ -87,7 +91,11 @@ class Driver():
                         mcmc=mcmc, 
                         verbose=True
                     )
+                except Exception:
+                    print('Exception occurred!')
+                    print(traceback.format_exc())
                     
+                try:
                     # run injection and recovery
                     if inj_rec:
                         print(f'\nRunning injections...')
@@ -103,8 +111,11 @@ class Driver():
                             full_grid=False,
                             beta_e=True
                         )
+                except Exception:
+                    print('Exception occurred!')
+                    print(traceback.format_exc())
                         
-                        
+                try:
                     # s-index analysis
                     if sind:
                         print(f'\nSearching S values...')
@@ -116,15 +127,18 @@ class Driver():
                             max_planets=8,
                             min_per=3,
                             workers=nproc, 
-                            mcmc=mcmc, 
+                            mcmc=False, 
                             verbose=True
                         )
+                except Exception:
+                    print('Exception occurred!')
+                    print(traceback.format_exc())
                     
+                try:
                     # make LS periodograms
                     print(f'\nComputing LS periodograms...')
                     lsp = LSPeriodogram(data, out_subdir)
                     lsp.plot_lsps()
-                    
                 except Exception:
                     print('Exception occurred!')
                     print(traceback.format_exc())
