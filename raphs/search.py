@@ -93,7 +93,7 @@ def search_sinds(
         search.Search: searcher
     """
     # must change column names to match rvsearch syntax
-    sinds = data.S_index_data
+    sinds = data.S_index_data.copy()
     sinds.rename(
         columns={
             'sind' : 'mnvel',
