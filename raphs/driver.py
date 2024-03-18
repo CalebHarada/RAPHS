@@ -36,6 +36,7 @@ class Driver():
     def do_everything(self,
             data_dir : str = '../data/',
             out_dir : str = 'OUT',
+            do_search: bool = True,
             inj_rec : bool = True,
             mcmc : bool = True,
             sind : bool = True,
@@ -70,27 +71,32 @@ class Driver():
                 except Exception:
                     print('Exception occurred!')
                     print(traceback.format_exc())
-                    
+                
                 # check for number of data points
+                if data.rv_data is None:
+                    print('\nNO DATA. SKIPPING TO NEXT TARGET.')
+                    sys.stdout = stdout_
+                    continue
                 if len(data.rv_data) < 25:
                     print('\nNUMBER OF RVS < 25. SKIPPING TO NEXT TARGET.')
                     sys.stdout = stdout_
                     continue
                     
                 try:
-                    # run search
-                    print(f'\nSearching RVs...')
-                    rv_search_obj = search_rvs(
-                        data=data,
-                        output_dir=out_subdir,
-                        fap=0.001,
-                        crit='bic',
-                        max_planets=8,
-                        min_per=3,
-                        workers=nproc, 
-                        mcmc=mcmc, 
-                        verbose=True
-                    )
+                    if do_search:
+                        # run search
+                        print(f'\nSearching RVs...')
+                        rv_search_obj = search_rvs(
+                            data=data,
+                            output_dir=out_subdir,
+                            fap=0.001,
+                            crit='bic',
+                            max_planets=8,
+                            min_per=3,
+                            workers=nproc, 
+                            mcmc=mcmc, 
+                            verbose=True
+                        )
                 except Exception:
                     print('Exception occurred!')
                     print(traceback.format_exc())

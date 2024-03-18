@@ -95,16 +95,22 @@ class LSPeriodogram():
         Returns:
             list: periods
         """
-        
-        post = posterior.load(self.output_dir + '/RV_search/post_final.pkl')
-        param_list = post.list_params()
-        
-        periods = []
-        for param in param_list:
-            if param.startswith('per'):
-                periods.append(post.params[param].value)
-                
-        return periods
+        try:
+            post = posterior.load(self.output_dir + '/RV_search/post_final.pkl')
+            param_list = post.list_params()
+            
+            periods = []
+            for param in param_list:
+                if param.startswith('per'):
+                    periods.append(post.params[param].value)
+            
+            if len(periods) > 0:
+                return periods
+            else: return None
+            
+        except FileNotFoundError:
+            return None
+            
         
     
     def compute_fap_thresh(self,
@@ -203,7 +209,7 @@ class LSPeriodogram():
         
         # add detected periods
         periods_post = self.get_periods_from_posterior()
-        if len(periods_post) > 0:
+        if periods_post is not None:
             for per in periods_post:
                 for ax in axes:
                     ax.axvline(per, ls='--', c='k', lw=1, alpha=0.5, zorder=0)
