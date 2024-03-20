@@ -34,7 +34,7 @@ class LSPeriodogram():
     
     def compute_lsps(self,
         min_per : float = 3.1,
-        delta_f : float = 1e-6,
+        delta_f : float = 1e-5,
         ) -> dict:
         """Compute LS periodograms for the data.
 

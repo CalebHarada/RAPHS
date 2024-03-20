@@ -2,6 +2,7 @@ import os, sys
 import traceback
 from datetime import datetime
 
+import numpy as np
 
 from raphs.stardata import StarData
 from raphs.periodogram import LSPeriodogram
@@ -66,22 +67,25 @@ class Driver():
                     # load data and save CSVs
                     print('Loading data...')
                     data = StarData(star, data_dir=data_dir)
-                    data.rv_data.to_csv(out_subdir + '/rvs.csv')
-                    data.S_index_data.to_csv(out_subdir + '/sinds.csv')
                 except Exception:
                     print('Exception occurred!')
                     print(traceback.format_exc())
                 
-                # check for number of data points
                 if data.rv_data is None:
                     print('\nNO DATA. SKIPPING TO NEXT TARGET.')
                     sys.stdout = stdout_
                     continue
+                else:
+                    # save data to csv files
+                    data.rv_data.to_csv(out_subdir + '/rvs.csv')
+                    data.S_index_data.to_csv(out_subdir + '/sinds.csv')
+                
+                # check for number of data points
                 if len(data.rv_data) < 25:
                     print('\nNUMBER OF RVS < 25. SKIPPING TO NEXT TARGET.')
                     sys.stdout = stdout_
                     continue
-                    
+                
                 try:
                     if do_search:
                         # run search
