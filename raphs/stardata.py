@@ -1,6 +1,6 @@
-import os
-
 import pandas as pd
+
+from radvel.utils import bintels
 
 from .utilities import *
 
@@ -17,7 +17,7 @@ class StarData():
     """
     def __init__(self, 
         hd_name : str, 
-        data_dir : str = 'data/',
+        data_dir : str = 'data',
         outlier_threshold : float = 5,
         ) -> None:
         """__init__
@@ -28,7 +28,7 @@ class StarData():
         self.outlier_threshold = outlier_threshold
         
         # load the EMSL/SPORES catalog
-        self.catalog_df = pd.read_csv(self.data_dir + 'spores_catalog_v1.0.0.csv')
+        self.catalog_df = pd.read_csv(self.data_dir + '/spores_catalog_v2.1.0.csv')
         
         # Find catalog entry for given HD target
         try:
@@ -57,7 +57,9 @@ class StarData():
         self.S_index_data = None
         try:
             self.rv_data = self._combine_rvs()
-            self.S_index_data = self._combine_S_indexes()
+            self.rv_data_bin = self._bin_rvs()
+            self.sind_data = self._combine_S_indexes()
+            self.sind_data_bin = self._bin_sinds()
         except ValueError as err:
             print(err)
             pass
@@ -76,7 +78,7 @@ class StarData():
         Returns:
             dict: catalog entry for given HD name
         """
-        catalog_entry = self.catalog_df[self.catalog_df['hd_name'] == self.hd_name]
+        catalog_entry = self.catalog_df[self.catalog_df['HD'] == self.hd_name]
         
         # Check if entry exists
         if len(catalog_entry) == 0:
@@ -98,7 +100,7 @@ class StarData():
         Returns:
             pd.DataFrame: table of values
         """
-        harps_rvbank_dir = self.data_dir + 'harps_rv_bank'
+        harps_rvbank_dir = self.data_dir + '/harps_rv_bank'
         
         # Attempt on HD name
         try:
@@ -119,7 +121,7 @@ class StarData():
         
         # Attempt on GJ name
         try:
-            gj_name = ''.join(self.catalog_entry['gj_name'].split())
+            gj_name = ''.join(self.catalog_entry['GJ'].split())
             harps_rvbank_data = pd.read_csv(f'{harps_rvbank_dir}/{gj_name}.csv', index_col=0)
             return harps_rvbank_data
         except FileNotFoundError:
@@ -127,7 +129,7 @@ class StarData():
         
         # Attempt on HIP name
         try:
-            hip_name = ''.join(self.catalog_entry['hip_name'].split())
+            hip_name = ''.join(self.catalog_entry['HIP'].split())
             harps_rvbank_data = pd.read_csv(f'{harps_rvbank_dir}/{hip_name}.csv', index_col=0)
             return harps_rvbank_data
         except FileNotFoundError:
@@ -135,7 +137,7 @@ class StarData():
         
         # Attempt on TYC name
         try:
-            tyc_name = 'TYC' + str(self.catalog_entry['tycho2_id'])
+            tyc_name = 'TYC' + str(self.catalog_entry['Tycho2'])
             harps_rvbank_data = pd.read_csv(f'{harps_rvbank_dir}/{tyc_name}.csv', index_col=0)
             return harps_rvbank_data
         except FileNotFoundError:
@@ -156,7 +158,7 @@ class StarData():
         Returns:
             pd.DataFrame: table of values
         """
-        hires_ebps_dir = self.data_dir + 'ebps_keck_hires'
+        hires_ebps_dir = self.data_dir + '/ebps_keck_hires'
         col_names = ['JD', 'RVel', 'e_RVel', 'S_value', 'Halpha', 'phot_per_pix', 't_exp']
 
         # Attempt on HD name
@@ -180,7 +182,7 @@ class StarData():
         
         # Attempt on HIP name
         try:
-            hip_name = ''.join(self.catalog_entry['hip_name'].split())
+            hip_name = ''.join(self.catalog_entry['HIP'].split())
             file_name = f'{hip_name}_KECK.vels'
             keck_hires_data = pd.read_csv(f'{hires_ebps_dir}/{file_name}', sep='\s+', header=None, names=col_names)
             return keck_hires_data
@@ -266,10 +268,10 @@ class StarData():
         st_activity_data = pd.DataFrame()
         
         # grab B-V mag
-        bv_mag = self.catalog_entry['sy_bvmag']
+        bv_mag = self.catalog_entry['B-V']
         
         # True if star is evolved
-        subgiant = ('IV' in self.catalog_entry['st_spectype'])
+        subgiant = ('IV' in self.catalog_entry['SpT'])
         
         # add HARPS data
         if self.harps_df is not None:
@@ -335,23 +337,73 @@ class StarData():
             raise ValueError(f'WARNING: No S-index data!')
         
 
+    def _bin_rvs(self,
+        bin_size : float = 0.5,
+        ) -> None:
+        """bin RV data
+
+        Args:
+            bin_size (float): bin size (days). default is 0.5.
+        """
+        jd_bin, mnvel_bin, errvel_bin, tel_bin = bintels(
+            self.rv_data['jd'].values,
+            self.rv_data['mnvel'].values,
+            self.rv_data['errvel'].values,
+            self.rv_data['tel'].values,
+            binsize=bin_size
+        )
+        # update values in new df
+        rv_bin = pd.DataFrame()
+        rv_bin['jd'] = jd_bin
+        rv_bin['mnvel'] = mnvel_bin
+        rv_bin['errvel'] = errvel_bin
+        rv_bin['tel'] = tel_bin
+        
+        return rv_bin
     
-    def to_csv(self,
-        save_fn : str
+    
+    def _bin_sinds(self,
+        bin_size : float = 0.5,
+        ) -> None:
+        """bin S index data
+
+        Args:
+            bin_size (float): bin size (days). default is 0.5.
+        """
+        jd_bin, mnsind_bin, errs_bin, tel_bin = bintels(
+            self.sind_data['jd'].values,
+            self.sind_data['sind'].values,
+            self.sind_data['errs'].values,
+            self.sind_data['tel'].values,
+            binsize=bin_size
+        )
+        # update values in new df
+        sind_bin = pd.DataFrame()
+        sind_bin['jd'] = jd_bin
+        sind_bin['sind'] = mnsind_bin
+        sind_bin['errs'] = errs_bin
+        sind_bin['tel'] = tel_bin
+        
+        return sind_bin
+
+    
+    def save_csvs(self,
+        out_subdir : str,
         ) -> None:
         """to_csv
 
         Save RV data to a CSV file
 
         Args:
-            save_fn (str): Save filename.
+            out_subdir (str): save output subdirectory.
         """
-
-        # save DF as CSV
-        self.rv_data.to_csv(save_fn)
+        
+        self.rv_data_bin.to_csv(out_subdir + '/rvs_bin.csv')
+        self.rv_data.to_csv(out_subdir + '/rvs.csv')
+        
+        self.sind_data_bin.to_csv(out_subdir + '/sinds_bin.csv')
+        self.sind_data.to_csv(out_subdir + '/sinds.csv')
         
         return
         
-    
-    
         

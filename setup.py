@@ -24,6 +24,7 @@ setup(
     author_email="charad@berkeley.edu",
     license="MIT",
     packages=find_packages(),
+    entry_points={'console_scripts': ['raphs=raphs.cli:main']},
     keywords="Radial velocity, exoplanets, HWO",
     install_requires=get_requires(),
 )
