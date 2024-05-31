@@ -1,29 +1,21 @@
-import sys
-import os
-
 import matplotlib.pyplot as plt
 
-MAIN_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.dirname(MAIN_DIR))
-
-from rvpipeline.search import *
+from raphs.search import *
 
 
 def test_search() -> None:
-    """_summary_
-
-    _extended_summary_
+    """Test planet RV search
     """
     
-    data = StarData(115617)
-    data.bin_rvs()
+    data = StarData('HD 75732 A')
         
     search_rvs(
         data,
-        max_planets=8,
-        min_per=3,
+        output_dir='test_outputs/',
+        max_planets=0,
+        min_per=8,
         workers=4,
-        mcmc=True,
+        mcmc=False,
         verbose=True
     )
     

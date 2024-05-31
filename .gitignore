@@ -1,3 +1,7 @@
+# Data and test outputs
+data/
+test_outputs/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
