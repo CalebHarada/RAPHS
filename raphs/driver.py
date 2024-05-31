@@ -81,6 +81,7 @@ class Driver():
                     data.S_index_data.to_csv(out_subdir + '/sinds.csv')
                 
                 # check for number of data points
+                # TODO: this should be 25 NIGHTs instead of 25 points?
                 if len(data.rv_data) < 25:
                     print('\nNUMBER OF RVS < 25. SKIPPING TO NEXT TARGET.')
                     sys.stdout = stdout_
