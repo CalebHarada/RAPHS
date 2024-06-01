@@ -90,7 +90,7 @@ def do_everything(args) -> None:
                 _ = run_injrec(
                     search_path=out_subdir + '/RV_search',
                     searches=rv_search_obj,
-                    mstar=data.catalog_entry['sed_grav_mass'],
+                    mstar=data.catalog_entry['Mstar-SED1'],
                     workers=args.num_cpus,
                     plim=(3.1, 1e6),
                     klim=(0.1, 1000.0),
