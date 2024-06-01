@@ -107,9 +107,8 @@ def do_everything(args) -> None:
         if args.sind:
             print(f'\nSearching S values...')
             try:
-                _ = search_sinds(
-                    data=data,
-                    output_dir=out_subdir,
+                _ = search_sinds(data, out_subdir,
+                    trend=True,
                     fap=0.001,
                     crit='bic',
                     max_planets=8,
