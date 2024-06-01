@@ -41,16 +41,16 @@ def main():
     psr_run.add_argument('hd_name', type=str,
                           help="System HD name"
                           )
-    psr_run.add_argument('--search', action='store_true',
+    psr_run.add_argument('--search', action='store_true', default=True,
                           help="Run search [default=True]"
                           )
-    psr_run.add_argument('--injrec', action='store_true',
+    psr_run.add_argument('--injrec', action='store_true', default=True,
                           help="Run injection/recovery [default=True]"
                           )
-    psr_run.add_argument('--mcmc', action='store_true',
+    psr_run.add_argument('--mcmc', action='store_true', default=True,
                           help="Run mcmc after search [default=True]"
                           )
-    psr_run.add_argument('--sind', action='store_true',
+    psr_run.add_argument('--sind', action='store_true', default=True,
                           help="Search S index values [default=False]"
                           )
 

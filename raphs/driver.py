@@ -10,7 +10,6 @@ from raphs.search import search_rvs, search_sinds
 from raphs.injrec import run_injrec
 
 
-
     
 def do_everything(args) -> None:
     """Run everything
@@ -45,7 +44,7 @@ def do_everything(args) -> None:
         if data.rv_data is None:
             print('\nNO DATA FOUND. ABORTING RUN.')
             sys.stdout = stdout_
-            pass
+            exit()
         else:
             # save data to csv files
             data.save_csvs(out_subdir)
@@ -54,7 +53,7 @@ def do_everything(args) -> None:
         if len(data.rv_data_bin) < 20:
             print('\nNUMBER OF EPOCHS < 20. ABORTING RUN.')
             sys.stdout = stdout_
-            pass
+            exit()
         print(f'\nNumber of RV epochs = {len(data.rv_data_bin)}')
         
         # check for baseline (10 days)
@@ -62,80 +61,79 @@ def do_everything(args) -> None:
         if baseline < 10.0:
             print('\nBASELINE < 10 DAYS. ABORTING RUN.')
             sys.stdout = stdout_
-            pass
+            exit()
         print(f'Baseline = {round(baseline, 2)} days ({round(baseline / 365.25, 2)} yrs)')
-
-            
-    #         try:
-    #             if do_search:
-    #                 # run search
-    #                 print(f'\nSearching RVs...')
-    #                 rv_search_obj = search_rvs(
-    #                     data=data,
-    #                     output_dir=out_subdir,
-    #                     fap=0.001,
-    #                     crit='bic',
-    #                     max_planets=8,
-    #                     min_per=3,
-    #                     workers=nproc, 
-    #                     mcmc=mcmc, 
-    #                     verbose=True
-    #                 )
-    #         except Exception:
-    #             print('Exception occurred!')
-    #             print(traceback.format_exc())
-                
-    #         try:
-    #             # run injection and recovery
-    #             if inj_rec:
-    #                 print(f'\nRunning injections...')
-    #                 _ = run_injrec(
-    #                     search_path=out_subdir + '/RV_search',
-    #                     searches=rv_search_obj,
-    #                     mstar=data.catalog_entry['sed_grav_mass'],
-    #                     workers=nproc,
-    #                     plim=(3.1, 1e6),
-    #                     klim=(0.1, 1000.0),
-    #                     elim=(0.0, 0.9),
-    #                     num_sim=5000,
-    #                     full_grid=False,
-    #                     beta_e=True
-    #                 )
-    #         except Exception:
-    #             print('Exception occurred!')
-    #             print(traceback.format_exc())
-                    
-    #         try:
-    #             # s-index analysis
-    #             if sind:
-    #                 print(f'\nSearching S values...')
-    #                 _ = search_sinds(
-    #                     data=data,
-    #                     output_dir=out_subdir,
-    #                     fap=0.001,
-    #                     crit='bic',
-    #                     max_planets=8,
-    #                     min_per=3,
-    #                     workers=nproc, 
-    #                     mcmc=False, 
-    #                     verbose=True
-    #                 )
-    #         except Exception:
-    #             print('Exception occurred!')
-    #             print(traceback.format_exc())
-                
-    #         try:
-    #             # make LS periodograms
-    #             print(f'\nComputing LS periodograms...')
-    #             lsp = LSPeriodogram(data, out_subdir)
-    #             lsp.plot_lsps()
-    #         except Exception:
-    #             print('Exception occurred!')
-    #             print(traceback.format_exc())
-            
-    #         print(f'\nDONE.')
-            
-    #         sys.stdout = stdout_
+        
+        
+        # RV run search
+        if args.search:
+            print(f'\nSearching RVs...')
+            try:
+                rv_search_obj = search_rvs(data, out_subdir,
+                    trend=True,
+                    fap=0.001,
+                    crit='bic',
+                    max_planets=8,
+                    min_per=3,
+                    workers=args.num_cpus, 
+                    mcmc=args.mcmc, 
+                    verbose=True
+                )
+            except Exception:
+                print('Exception occurred!')
+                print(traceback.format_exc())
+        
+         # run injection and recovery
+        if args.injrec:
+            print(f'\nRunning injections...')
+            try:
+                _ = run_injrec(
+                    search_path=out_subdir + '/RV_search',
+                    searches=rv_search_obj,
+                    mstar=data.catalog_entry['sed_grav_mass'],
+                    workers=args.num_cpus,
+                    plim=(3.1, 1e6),
+                    klim=(0.1, 1000.0),
+                    elim=(0.0, 0.9),
+                    num_sim=5000,
+                    full_grid=False,
+                    beta_e=True
+                )
+            except Exception:
+                print('Exception occurred!')
+                print(traceback.format_exc())
+           
+        # s-index analysis         
+        if args.ind:
+            print(f'\nSearching S values...')
+            try:
+                _ = search_sinds(
+                    data=data,
+                    output_dir=out_subdir,
+                    fap=0.001,
+                    crit='bic',
+                    max_planets=8,
+                    min_per=3,
+                    workers=args.num_cpus, 
+                    mcmc=False, 
+                    verbose=True
+                )
+            except Exception:
+                print('Exception occurred!')
+                print(traceback.format_exc())
+        
+        # make LS periodograms
+        print(f'\nComputing LS periodograms...')  
+        try:
+            lsp = LSPeriodogram(data, out_subdir)
+            lsp.plot_lsps()
+        except Exception:
+            print('Exception occurred!')
+            print(traceback.format_exc())
+        
+        print(f'\nDONE.')
+        
+        sys.stdout = stdout_
 
     
     
