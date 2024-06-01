@@ -25,8 +25,8 @@ def search_rvs(
     # get stellar mass and uncert
     # NOTE: here using ARIADNE-derived masses
     mstar = (
-        data.catalog_entry['sed_grav_mass'],
-        np.mean([data.catalog_entry['sed_grav_masserr1'], data.catalog_entry['sed_grav_masserr2']])
+        data.catalog_entry['Mstar-SED1'],
+        np.mean([data.catalog_entry['e_Mstar-SED1'], data.catalog_entry['E_Mstar-SED1']])
         )
     
     # initiate search
@@ -81,8 +81,8 @@ def search_sinds(
     # get stellar mass and uncert
     # NOTE: here using ARIADNE-derived masses
     mstar = (
-        data.catalog_entry['sed_grav_mass'],
-        np.mean([data.catalog_entry['sed_grav_masserr1'], data.catalog_entry['sed_grav_masserr2']])
+        data.catalog_entry['Mstar-SED1'],
+        np.mean([data.catalog_entry['e_Mstar-SED1'], data.catalog_entry['E_Mstar-SED1']])
         )
     
     # initiate search

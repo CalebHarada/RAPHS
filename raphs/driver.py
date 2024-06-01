@@ -104,7 +104,7 @@ def do_everything(args) -> None:
                 print(traceback.format_exc())
            
         # s-index analysis         
-        if args.ind:
+        if args.sind:
             print(f'\nSearching S values...')
             try:
                 _ = search_sinds(
