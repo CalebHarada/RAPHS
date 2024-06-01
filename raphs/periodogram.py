@@ -45,8 +45,8 @@ class LSPeriodogram():
         Returns:
             dict: lsp_dict
         """       
-        rvs = self.data.rv_data
-        svals = self.data.S_index_data
+        rvs = self.data.rv_data_bin
+        svals = self.data.sind_data_bin
         
         max_per = 1.5 * np.ptp(rvs['jd'])
         f = np.arange(1/max_per, 1/min_per, delta_f)
