@@ -114,7 +114,7 @@ def do_everything(args) -> None:
                     max_planets=8,
                     min_per=3,
                     workers=args.num_cpus, 
-                    mcmc=False, 
+                    mcmc=args.mcmc, 
                     verbose=True
                 )
             except Exception:
