@@ -111,7 +111,7 @@ class StarData():
             pass
         
         # Attempt again if letter in name
-        if 'A' in self.hd_name:
+        if ('A' in self.hd_name) | ('B' in self.hd_name):
             try:
                 hd_name = ''.join(self.hd_name.split()[:-1])
                 harps_rvbank_data = pd.read_csv(f'{harps_rvbank_dir}/{hd_name}.csv', index_col=0)
@@ -126,6 +126,15 @@ class StarData():
             return harps_rvbank_data
         except FileNotFoundError:
             pass
+        
+        # Attempt GJ again if letter in name
+        if ('A' in self.catalog_entry['GJ']) | ('B' in self.catalog_entry['GJ']):
+            try:
+                gj_name = ''.join(self.catalog_entry['GJ'].split())[:-1]
+                harps_rvbank_data = pd.read_csv(f'{harps_rvbank_dir}/{gj_name}.csv', index_col=0)
+                return harps_rvbank_data
+            except FileNotFoundError:
+                pass
         
         # Attempt on HIP name
         try:
